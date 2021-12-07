@@ -1,8 +1,8 @@
 const form = document.querySelector('form');
 form.addEventListener('submit', addBook);
 
-const bookList = document.querySelector('ul');
-bookList.addEventListener('click', deleteBook);
+//const bookList = document.querySelector('td');
+//bookList.addEventListener('click', deleteBook);
 
 // const deleteBtn = document.querySelector('#delete-books');
 // deleteBtn.addEventListener('click', delBooks);
@@ -16,19 +16,20 @@ function getBooks() {
     } else {
         books = JSON.parse(localStorage.getItem('books'));
     }
-    console.log(books);
+
     books.forEach(function(book) {
-        const bookList = document.querySelector('ul');
-        const li = document.createElement('li');
-        li.className = 'collection-item';
-        const text = document.createTextNode(book);
-        li.appendChild(text);
-        const link = document.createElement('a');
-        link.className = 'secondary-content';
-        link.appendChild(document.createTextNode('X'));
-        link.setAttribute('href', '#');
-        li.appendChild(link);
-        bookList.appendChild(li);
+        const bookList = document.querySelector('tbody');
+
+        let row = bookList.insertRow();
+        let cell1 = row.insertCell(0);
+        let cell2 = row.insertCell(1);
+        let cell3 = row.insertCell(2);
+        let cell4 = row.insertCell(3);
+    
+        cell1.innerHTML = book.title;
+        cell2.innerHTML = book.author;
+        cell3.innerHTML = book.isbn;
+        cell4.appendChild(createDeleteButton());
     })
 }
 
@@ -46,22 +47,24 @@ function removeAllStorage() {
 function deleteBook(event) {
     if (event.target.textContent === 'X') {
         if (confirm('Do you really want to delete this book?')) {
-            event.target.parentElement.remove();
-            let book = event.target.parentElement.textContent.slice(0, -1);
-            removeBookFromStorage(book);
+            const bookRowElement = event.target.parentElement.parentElement;
+            let title = bookRowElement.cells[0].innerHTML.slice(0, -1);
+            bookRowElement.remove();
+            console.log(title);
+            removeBookFromStorageByTitle(title);
         }
     }
 }
 
-function removeBookFromStorage(book) {
+function removeBookFromStorageByTitle(title) {
     let books;
     if (localStorage.getItem('books') === null) {
         books = [];
     } else {
         books = JSON.parse(localStorage.getItem('books'));
     }
-    books.forEach(function(bookFromLS, bookIndex) {
-        if(bookFromLS === book) {
+    books.forEach(function(book, bookIndex) {
+        if(book.title === title) {
             books.splice(bookIndex, 1);
         }
     })
@@ -69,24 +72,36 @@ function removeBookFromStorage(book) {
 }
 
 function addBook(event) {
-    const book = document.querySelector('#book').value;
-    const bookList = document.querySelector('ul');
-    const li = document.createElement('li');
-    li.className = 'collection-item';
-    const text = document.createTextNode(book);
-    li.appendChild(text);
-    const link = document.createElement('a');
-    link.className = 'secondary-content';
-    link.appendChild(document.createTextNode('X'));
-    link.setAttribute('href', '#');
-    li.appendChild(link);
-    bookList.appendChild(li);
-    bookStorage(book);
-    document.querySelector('#book').value = '';
     event.preventDefault();
+
+    const title = document.querySelector('#title').value;
+    const author = document.querySelector('#author').value;
+    const isbn = document.querySelector('#isbn').value;
+
+    const bookList = document.querySelector('tbody');
+
+    let row = bookList.insertRow();
+    let cell1 = row.insertCell(0);
+    let cell2 = row.insertCell(1);
+    let cell3 = row.insertCell(2);
+    let cell4 = row.insertCell(3);
+
+    cell1.innerHTML = title;
+    cell2.innerHTML = author;
+    cell3.innerHTML = isbn;
+    cell4.appendChild(createDeleteButton());
+
+    let book = {title: title, author: author, isbn: isbn};
+
+    addBookToLocalStorage(book);
+
+    // refresh input field
+    document.querySelector('#title').value = '';
+    document.querySelector('#author').value = '';
+    document.querySelector('#isbn').value = '';
 }
 
-function bookStorage(book) {
+function addBookToLocalStorage(book) {
     let books;
     if(localStorage.getItem('books') === null) {
         books = [];
@@ -95,4 +110,13 @@ function bookStorage(book) {
     }
     books.push(book);
     localStorage.setItem('books', JSON.stringify(books));
+}
+
+function createDeleteButton() {
+    const btnLink = document.createElement('a');
+    btnLink.className = 'secondary-content';
+    btnLink.appendChild(document.createTextNode('X'));
+    btnLink.setAttribute('href', '#');
+    btnLink.addEventListener('click', deleteBook);
+    return btnLink;
 }
