@@ -1,95 +1,98 @@
-const form = document.querySelector('form')
-form.addEventListener('submit', addTask)
+const form = document.querySelector('form');
+form.addEventListener('submit', addBook);
 
-const taskList = document.querySelector('ul')
-taskList.addEventListener('click', delTask)
+const bookList = document.querySelector('ul');
+bookList.addEventListener('click', deleteBook);
 
-const deleteBtn = document.querySelector('#delete-tasks')
-deleteBtn.addEventListener('click', delTasks)
+// const deleteBtn = document.querySelector('#delete-books');
+// deleteBtn.addEventListener('click', delBooks);
 
-document.addEventListener('DOMContentLoaded', getTasks)
+document.addEventListener('DOMContentLoaded', getBooks);
 
-function getTasks(){
-    let tasks
-    if(localStorage.getItem('tasks') === null){
-        tasks = []
+function getBooks() {
+    let books;
+    if (localStorage.getItem('books') === null) {
+        books = [];
     } else {
-        tasks = JSON.parse(localStorage.getItem('tasks'))
+        books = JSON.parse(localStorage.getItem('books'));
     }
-    tasks.forEach(function(tasksFromLS){
-        const li = document.createElement('li')
-        li.classname = 'collection-item'
-        const text = document.createTextNode(task)
-        li.appendChild(text)
-        const link = document.createElement( 'a')
-        link.className = 'secondary-content'
-        link.appendChild(document.createTextNode('X'))
-        link.setAttribute('href', '#')
-        li.appendChild(link)
-
+    console.log(books);
+    books.forEach(function(book) {
+        const bookList = document.querySelector('ul');
+        const li = document.createElement('li');
+        li.className = 'collection-item';
+        const text = document.createTextNode(book);
+        li.appendChild(text);
+        const link = document.createElement('a');
+        link.className = 'secondary-content';
+        link.appendChild(document.createTextNode('X'));
+        link.setAttribute('href', '#');
+        li.appendChild(link);
+        bookList.appendChild(li);
     })
 }
 
-function delTasks(){
-    while(taskList.firstChild){
-        taskList.removeChild(taskList.firstChild)
+function deleteBooks() {
+    while (bookList.firstChild) {
+        bookList.removeChild(bookList.firstChild);
     }
-    removeAllStorage()
-}
-function removeAllStorage(){
-    localStorage.removeItem('task')
+    removeAllStorage();
 }
 
-function delTask(event){
-    if(event.target.textContent === 'X'){
-        if(confirm('Do you really want to delete this task?')){
-            event.target.parentElement.remove()
-            let task = event.target.parentElement.textContent.slice(0, -1)
-            removeStorage(task)
+function removeAllStorage() {
+    localStorage.removeItem('books');
+}
+
+function deleteBook(event) {
+    if (event.target.textContent === 'X') {
+        if (confirm('Do you really want to delete this book?')) {
+            event.target.parentElement.remove();
+            let book = event.target.parentElement.textContent.slice(0, -1);
+            removeBookFromStorage(book);
         }
     }
 }
 
-function removeStorage(task){
-    let tasks
-    if (localStorage.getItem('tasks') === null){
-        tasks = []
+function removeBookFromStorage(book) {
+    let books;
+    if (localStorage.getItem('books') === null) {
+        books = [];
     } else {
-        tasks = JSON.parse(localStorage.getItem('tasks'))
+        books = JSON.parse(localStorage.getItem('books'));
     }
-    tasks.forEach(function(taskFromLS, taskIndex){
-        if(taskFromLS === task){
-            task.splice(taskIndex, 1)
+    books.forEach(function(bookFromLS, bookIndex) {
+        if(bookFromLS === book) {
+            books.splice(bookIndex, 1);
         }
     })
-    localStorage.setItem('tasks', JSON.stringify(tasks))
+    localStorage.setItem('books', JSON.stringify(books));
 }
 
-function addTask(event){
-    const task = document.querySelector('#task').value
-    const taskList = document.querySelector('ul');
-    const li = document.createElement('li')
-    li.className = 'collection-item'
-    const text = document.createTextNode(task)
-    li.appendChild(text)
-    const link = document.createElement( 'a')
-    link.className = 'secondary-content'
-    link.appendChild(document.createTextNode('X'))
-    link.setAttribute('href', '#')
-    li.appendChild(link)
-    taskList.appendChild(li)
-    taskStorage(task)
-    document.querySelector('#task').value = ''
-    event.preventDefault()
+function addBook(event) {
+    const book = document.querySelector('#book').value;
+    const bookList = document.querySelector('ul');
+    const li = document.createElement('li');
+    li.className = 'collection-item';
+    const text = document.createTextNode(book);
+    li.appendChild(text);
+    const link = document.createElement('a');
+    link.className = 'secondary-content';
+    link.appendChild(document.createTextNode('X'));
+    link.setAttribute('href', '#');
+    li.appendChild(link);
+    bookList.appendChild(li);
+    bookStorage(book);
+    document.querySelector('#book').value = '';
+    event.preventDefault();
 }
-function taskStorage(task){
-    let tasks
-    if(localStorage.getItem('tasks') === null){
-        tasks = []
+
+function bookStorage(book) {
+    let books;
+    if(localStorage.getItem('books') === null) {
+        books = [];
     } else {
-        tasks = JSON.parse(localStorage.getItem('tasks'))
+        books = JSON.parse(localStorage.getItem('books'));
     }
-    tasks.push(task)
-    localStorage.setItem('tasks', JSON.stringify(tasks))
-
+    books.push(book);
+    localStorage.setItem('books', JSON.stringify(books));
 }
